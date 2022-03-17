@@ -10,10 +10,10 @@ private:
     int numFrames;
     int frameWidth;
     sf::IntRect frameRect;
-    sf::Sprite* sprite;
+    sf::Sprite& sprite;
 
 public:
-    Animation(sf::Sprite* sprite, float duration, int numFrames);
+    Animation(sf::Sprite& sprite, float duration, int numFrames);
 
     void update(float dt);
 };
