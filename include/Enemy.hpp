@@ -4,5 +4,5 @@
 
 class Enemy: public Entity {
 public:
-    Enemy(sf::Texture* texture);
+    Enemy(sf::RenderTarget* master, sf::Texture* texture);
 };

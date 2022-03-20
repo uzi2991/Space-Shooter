@@ -4,5 +4,5 @@
 
 class Bullet: public Entity {
 public:
-    Bullet(sf::Texture* texture);
+    Bullet(sf::RenderTarget* master ,sf::Texture* texture);
 };

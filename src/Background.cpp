@@ -1,6 +1,6 @@
 #include <Background.hpp>
 
-Background::Background(sf::Texture* texture) {
+Background::Background(sf::RenderTarget* master, sf::Texture* texture) {
     this->sprite1.setTexture(*texture);
     this->sprite2.setTexture(*texture);
     this->sprite1.setScale(2.f, 2.f);
@@ -11,6 +11,8 @@ Background::Background(sf::Texture* texture) {
 
     this->sprite1.setPosition(0.f, 0.f);
     this->sprite2.setPosition(0.f, this->height);
+
+    this->master = master;
 }
 
 void Background::update(float dt) {
@@ -27,7 +29,7 @@ void Background::update(float dt) {
     }
 }
 
-void Background::render(sf::RenderTarget* target) const {
-    target->draw(this->sprite1);
-    target->draw(this->sprite2);
+void Background::render() const {
+    this->master->draw(this->sprite1);
+    this->master->draw(this->sprite2);
 }

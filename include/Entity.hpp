@@ -9,9 +9,10 @@ protected:
     Animation* animation;
 
     float movementSpeed;
+    sf::RenderTarget* master;
 
 public:
-    Entity(sf::Texture* texture);
+    Entity(sf::RenderTarget* master, sf::Texture* texture);
 
     ~Entity();
 
@@ -19,7 +20,7 @@ public:
 
     void setPosition(float x, float y);
 
-    void render(sf::RenderTarget* target) const;
+    void render() const;
 
     void update(float dt);
 

@@ -7,12 +7,13 @@ private:
     sf::Sprite sprite1, sprite2;
     int height;
     float speed;
+    sf::RenderTarget* master;
 
 public:
-    Background(sf::Texture* texture);
+    Background(sf::RenderTarget* master, sf::Texture* texture);
 
     void update(float dt);
 
-    void render(sf::RenderTarget* target) const;
+    void render() const;
     
 };

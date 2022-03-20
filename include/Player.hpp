@@ -4,5 +4,5 @@
 
 class Player: public Entity {
 public:
-    Player(sf::Texture* texture);
+    Player(sf::RenderTarget* master, sf::Texture* texture);
 };

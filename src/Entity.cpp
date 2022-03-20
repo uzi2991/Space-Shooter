@@ -1,8 +1,9 @@
 #include <Entity.hpp>
 
-Entity::Entity(sf::Texture* texture) {
+Entity::Entity(sf::RenderTarget* master, sf::Texture* texture) {
     this->sprite.setTexture(*texture);
     this->animation = nullptr;
+    this->master = master;
 }
 
 Entity::~Entity() {
@@ -17,8 +18,8 @@ void Entity::setPosition(float x, float y) {
     this->sprite.setPosition(x, y);
 }
 
-void Entity::render(sf::RenderTarget* target) const {
-    target->draw(this->sprite);
+void Entity::render() const {
+    this->master->draw(this->sprite);
 }
 
 void Entity::update(float dt) {

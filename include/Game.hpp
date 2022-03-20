@@ -6,8 +6,11 @@
 #include <Enemy.hpp>
 #include <Background.hpp>
 #include <map>
+#include <set>
 #include <vector>
 #include <cstdlib>
+#include <ctime>
+#include <iostream>
 
 class Game {
 private:
@@ -40,12 +43,17 @@ private:
     float bulletShootingTimer;
 
     // Enemies
+    std::vector<Enemy*> enemies;
+    float enemySpawnMaxTimer;
+    float enemySpawnTimer;
+    void spawnEnemy();
 
     // Initialize Functions
 
     void initWindow();
     void initTextures();
     void initBullets();
+    void initEnemies();
 
     // Update functions
 
@@ -54,11 +62,13 @@ private:
     void updatePlayerShooting();
     void updateCollision();
     void updateBullets();
+    void updateEnemies();
 
     // Render functions
 
     void render();
     void renderBullets();
+    void renderEnemies();
 
 public:
     // Constructor

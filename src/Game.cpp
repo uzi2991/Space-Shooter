@@ -1,9 +1,26 @@
 #include <Game.hpp>
 
+
 // Constants
 
 const int Game::WINDOW_WIDTH = 256 * 2;
 const int Game::WINDOW_HEIGHT = 272 * 2;
+
+// Game Logics
+
+void Game::spawnEnemy() {
+    if (this->enemySpawnTimer < this->enemySpawnMaxTimer) {
+        return;
+    }
+
+    this->enemySpawnTimer -= this->enemySpawnMaxTimer;
+
+    auto newEnemy = new Enemy(this->window, this->textures["enemy"]);
+    int randomXPos = rand() % (Game::WINDOW_WIDTH - int(newEnemy->getBounds().width));
+    newEnemy->setPosition(randomXPos, -newEnemy->getBounds().height);
+
+    this->enemies.push_back(newEnemy);
+}
 
 // Update functions
 
@@ -27,7 +44,7 @@ void Game::updatePlayerMovement() {
 
 void Game::updatePlayerShooting() {
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->bulletShootingTimer >= this->bulletShootingMaxTimer) {
-        this->bullets.push_back(new Bullet(this->textures["bullet"]));
+        this->bullets.push_back(new Bullet(this->window, this->textures["bullet"]));
         this->bullets.back()->setPosition(
             this->player->getBounds().left + this->player->getBounds().width / 2,
             this->player->getBounds().top
@@ -70,17 +87,57 @@ void Game::updateCollision() {
 
 void Game::updateBullets() {
     int counter = 0;
-
+    std::set<int> deleted;
     for (auto bullet : this->bullets) {
         sf::FloatRect rect = bullet->getBounds();
-        if (rect.left + rect.height < 0.f) {
+        if (rect.top + rect.height < 0.f) {
             delete bullet;
-            this->bullets.erase(this->bullets.begin() + counter);
+            deleted.insert(counter);
         } else {
             bullet->move(sf::Vector2f(0.f, -1.f), this->dt); 
         }
 
         ++counter;
+    }
+
+    if (!deleted.empty()) {
+        std::vector<Bullet*> temp;
+        for (int i = 0; i < (int)this->bullets.size(); ++i) {
+            if (deleted.find(i) == deleted.end()) {
+                temp.push_back(this->bullets[i]);
+            }
+        }
+
+        this->bullets = temp;
+    }
+}
+
+void Game::updateEnemies() {
+    this->spawnEnemy();
+    int counter = 0;
+    std::set<int> deleted;
+    for (auto enemy : this->enemies) {
+        sf::FloatRect rect = enemy->getBounds();
+        if (rect.top > Game::WINDOW_HEIGHT) {
+            delete enemy;
+            deleted.insert(counter);
+        } else {
+            enemy->move(sf::Vector2f(0.f, 1.f), this->dt); 
+            enemy->update(this->dt);
+        }
+
+        ++counter;
+    }
+
+    if (!deleted.empty()) {
+        std::vector<Enemy*> temp;
+        for (int i = 0; i < (int)this->enemies.size(); ++i) {
+            if (deleted.find(i) == deleted.end()) {
+                temp.push_back(this->enemies[i]);
+            }
+        }
+
+        this->enemies = temp;
     }
 }
 
@@ -96,6 +153,7 @@ void Game::update() {
     // Measure time
     this->dt = this->clock.restart().asSeconds();
     this->bulletShootingTimer += this->dt;
+    this->enemySpawnTimer += this->dt;
 
     this->background->update(dt);
     // Player input
@@ -105,6 +163,7 @@ void Game::update() {
     // Game logic
     this->updateCollision();
     this->updateBullets();
+    this->updateEnemies();
     this->player->update(this->dt);
 }
 
@@ -115,9 +174,12 @@ void Game::render() {
     this->window->clear(sf::Color::White);
 
     // Draw
-    this->background->render(this->window);
-    this->player->render(this->window);
+    this->background->render();
+    this->player->render();
     this->renderBullets();
+    this->renderEnemies();
+
+    std::cout << this->enemies.size() << " " << this->bullets.size() << "\n";
 
     // Display
     this->window->display();
@@ -125,7 +187,13 @@ void Game::render() {
 
 void Game::renderBullets() {
     for (auto bullet: this->bullets) {
-        bullet->render(this->window);
+        bullet->render();
+    }
+}
+
+void Game::renderEnemies() {
+    for (auto enemy: this->enemies) {
+        enemy->render();
     }
 }
 
@@ -151,16 +219,18 @@ void Game::initTextures() {
     this->textures["bullet"]->loadFromFile("res/Graphics/spritesheets/bullet.png", sf::IntRect(0, 0, 16, 16));
     
     this->textures["enemy"] = new sf::Texture();
-    this->textures["enemy"]->loadFromFile(
-        "res/Graphics/spritesheets/enemy-medium.png",
-        sf::IntRect(0, 0, 32, 8)
-    );
+    this->textures["enemy"]->loadFromFile("res/Graphics/spritesheets/enemy-medium.png");
 
 }
 
 void Game::initBullets() {
     this->bulletShootingMaxTimer = 0.5f;
     this->bulletShootingTimer = this->bulletShootingMaxTimer;
+}
+
+void Game::initEnemies() {
+    this->enemySpawnMaxTimer = 1.f;
+    this->enemySpawnTimer = this->enemySpawnTimer;
 }
 
 
@@ -170,14 +240,17 @@ Game::Game() {
     this->initWindow();
     this->initTextures();
     this->initBullets();
+    this->initEnemies();
 
-    this->player = new Player(this->textures["player"]);
+    this->player = new Player(this->window, this->textures["player"]);
     this->player->setPosition(
         this->window->getSize().x / 2 - this->player->getBounds().width / 2,
         this->window->getSize().y - this->player->getBounds().height
     );
 
-    this->background = new Background(this->textures["background"]);
+    this->background = new Background(this->window, this->textures["background"]);
+
+    srand(time(NULL));
 }
 
 // Destructor
@@ -199,6 +272,11 @@ Game::~Game() {
 
     // Delete bullets
     for (auto it : this->bullets) {
+        delete it;
+    }
+
+    // Delete enemies
+    for (auto it : this->enemies) {
         delete it;
     }
 }
