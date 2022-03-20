@@ -4,12 +4,16 @@
 #include <Player.hpp>
 #include <Bullet.hpp>
 #include <Enemy.hpp>
+#include <Background.hpp>
 #include <map>
 #include <vector>
 #include <cstdlib>
 
 class Game {
 private:
+    // Constants
+
+    static const int WINDOW_WIDTH, WINDOW_HEIGHT;
     // Window
     
     sf::RenderWindow* window;
@@ -24,7 +28,7 @@ private:
 
     // Background
 
-    sf::Sprite background;
+    Background* background;
 
     // Player
 

@@ -1,5 +1,10 @@
 #include <Game.hpp>
 
+// Constants
+
+const int Game::WINDOW_WIDTH = 256 * 2;
+const int Game::WINDOW_HEIGHT = 272 * 2;
+
 // Update functions
 
 void Game::updatePlayerMovement() {
@@ -92,6 +97,7 @@ void Game::update() {
     this->dt = this->clock.restart().asSeconds();
     this->bulletShootingTimer += this->dt;
 
+    this->background->update(dt);
     // Player input
     this->updatePlayerMovement();
     this->updatePlayerShooting();
@@ -109,7 +115,7 @@ void Game::render() {
     this->window->clear(sf::Color::White);
 
     // Draw
-    this->window->draw(this->background);
+    this->background->render(this->window);
     this->player->render(this->window);
     this->renderBullets();
 
@@ -128,11 +134,10 @@ void Game::renderBullets() {
 
 void Game::initWindow() {
     this->window = new sf::RenderWindow(
-        sf::VideoMode(600, 600),
+        sf::VideoMode(Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT),
         "Space Shooter",
         sf::Style::Close | sf::Style::Titlebar
     );
-    this->window->setFramerateLimit(120);
 }
 
 void Game::initTextures() {
@@ -172,8 +177,7 @@ Game::Game() {
         this->window->getSize().y - this->player->getBounds().height
     );
 
-    this->background.setTexture(*this->textures["background"]);
-    this->background.setPosition(0.f, 0.f);
+    this->background = new Background(this->textures["background"]);
 }
 
 // Destructor
@@ -184,6 +188,9 @@ Game::~Game() {
 
     // Delete player
     delete this->player;
+
+    // Delete background
+    delete this->background;
 
     // Delete textures
     for (auto &it : this->textures) {
