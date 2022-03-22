@@ -1,20 +1,19 @@
 #pragma once
 
 #include <Animation.hpp>
+#include <memory>
 
 
 class Entity {
 protected:
     sf::Sprite sprite;
-    Animation* animation;
+    std::shared_ptr<Animation> animation;
 
     float movementSpeed;
-    sf::RenderTarget* master;
+    std::shared_ptr<sf::RenderTarget> master;
 
 public:
-    Entity(sf::RenderTarget* master, sf::Texture* texture);
-
-    ~Entity();
+    Entity(const std::shared_ptr<sf::RenderTarget>& master, const std::shared_ptr<sf::Texture>& texture);
 
     void move(const sf::Vector2f &direction, float dt);
 

@@ -4,5 +4,5 @@
 
 class Enemy: public Entity {
 public:
-    Enemy(sf::RenderTarget* master, sf::Texture* texture);
+    Enemy(const std::shared_ptr<sf::RenderTarget>& master, const std::shared_ptr<sf::Texture>& texture);
 };

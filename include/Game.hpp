@@ -11,39 +11,57 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <memory>
+
+enum class State {
+    GAME_OVER,
+    PLAYING
+};
 
 class Game {
 private:
     // Constants
 
     static const int WINDOW_WIDTH, WINDOW_HEIGHT;
+
     // Window
     
-    sf::RenderWindow* window;
+    std::shared_ptr<sf::RenderWindow> window;
 
     // Clock and time
+
     sf::Clock clock;
     float dt;
 
+    // Fonts and Texts
+
+    sf::Font font;
+    std::string scoreString;
+    sf::Text scoreText;
+    sf::Text gameOverText;
+
     // Textures
 
-    std::map<std::string, sf::Texture*> textures;
+    std::map<std::string, std::shared_ptr<sf::Texture>> textures;
 
     // Background
 
-    Background* background;
+    std::shared_ptr<Background> background;
 
     // Player
 
-    Player* player;
+    std::shared_ptr<Player> player;
+    int playerScore;
 
     // Bullets
-    std::vector<Bullet*> bullets;
+
+    std::vector<std::shared_ptr<Bullet>> bullets;
     float bulletShootingMaxTimer;
     float bulletShootingTimer;
 
     // Enemies
-    std::vector<Enemy*> enemies;
+
+    std::vector<std::shared_ptr<Enemy>> enemies;
     float enemySpawnMaxTimer;
     float enemySpawnTimer;
     void spawnEnemy();
@@ -57,27 +75,41 @@ private:
 
     // Update functions
 
-    void update();
+    void updatePlaying();
     void updatePlayerMovement();
     void updatePlayerShooting();
     void updateCollision();
     void updateBullets();
     void updateEnemies();
 
+    // Misc
+
+    void updateScore();
+
+    // Collision
+
+    bool checkCollisionEnemyWithBullets(const std::shared_ptr<Enemy>& enemy);
+    bool checkCollisionPlayerWithEnemies();
+
+    // Game states
+
+    State state;
+
+    // All state update
+
+    void updateAll();
+
     // Render functions
 
-    void render();
+    void renderPlaying();
     void renderBullets();
     void renderEnemies();
+    void renderGameOver();
 
 public:
     // Constructor
 
     Game();
-
-    // Destructor
-
-    ~Game();
 
     // Run function
     void run();

@@ -1,16 +1,17 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 class Background {
 private:
     sf::Sprite sprite1, sprite2;
     int height;
     float speed;
-    sf::RenderTarget* master;
+    std::shared_ptr<sf::RenderTarget> master;
 
 public:
-    Background(sf::RenderTarget* master, sf::Texture* texture);
+    Background(const std::shared_ptr<sf::RenderTarget>& master, const std::shared_ptr<sf::Texture>& texture);
 
     void update(float dt);
 

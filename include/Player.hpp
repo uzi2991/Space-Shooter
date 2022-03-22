@@ -4,5 +4,5 @@
 
 class Player: public Entity {
 public:
-    Player(sf::RenderTarget* master, sf::Texture* texture);
+    Player(const std::shared_ptr<sf::RenderTarget>& master, const std::shared_ptr<sf::Texture>& texture);
 };

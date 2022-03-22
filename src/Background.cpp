@@ -1,6 +1,6 @@
 #include <Background.hpp>
 
-Background::Background(sf::RenderTarget* master, sf::Texture* texture) {
+Background::Background(const std::shared_ptr<sf::RenderTarget>& master, const std::shared_ptr<sf::Texture>& texture) {
     this->sprite1.setTexture(*texture);
     this->sprite2.setTexture(*texture);
     this->sprite1.setScale(2.f, 2.f);
