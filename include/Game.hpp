@@ -3,8 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include <Player.hpp>
 #include <Bullet.hpp>
-#include <Enemy.hpp>
 #include <Background.hpp>
+#include <EnemyManager.hpp>
+#include <BulletManager.hpp>
 #include <map>
 #include <set>
 #include <vector>
@@ -21,94 +22,66 @@ enum class State {
 class Game {
 private:
     // Constants
-
     static const int WINDOW_WIDTH, WINDOW_HEIGHT;
 
     // Window
-    
-    std::shared_ptr<sf::RenderWindow> window;
+    std::unique_ptr<sf::RenderWindow> window;
 
     // Clock and time
-
     sf::Clock clock;
     float dt;
 
-    // Fonts and Texts
+    // Game State
+    State state;
 
+    // Fonts and Texts
     sf::Font font;
     std::string scoreString;
     sf::Text scoreText;
-    sf::Text gameOverText;
 
     // Textures
-
     std::map<std::string, std::shared_ptr<sf::Texture>> textures;
 
     // Background
-
-    std::shared_ptr<Background> background;
+    std::unique_ptr<Background> background;
 
     // Player
-
-    std::shared_ptr<Player> player;
+    std::unique_ptr<Player> player;
     int playerScore;
 
     // Bullets
-
-    std::vector<std::shared_ptr<Bullet>> bullets;
-    float bulletShootingMaxTimer;
-    float bulletShootingTimer;
+    BulletManager bullets;
+    float shootingCooldown;
+    float shootingTotalTime;
 
     // Enemies
-
-    std::vector<std::shared_ptr<Enemy>> enemies;
-    float enemySpawnMaxTimer;
-    float enemySpawnTimer;
-    void spawnEnemy();
+    EnemyManager enemies;
 
     // Initialize Functions
-
     void initWindow();
     void initTextures();
     void initBullets();
     void initEnemies();
+    void initPlayer();
 
-    // Update functions
+    // Handle input
+    void handleInput();
+    void handlePlayerInput();
+    void handleSystemInput();
 
-    void updatePlaying();
-    void updatePlayerMovement();
-    void updatePlayerShooting();
-    void updateCollision();
-    void updateBullets();
-    void updateEnemies();
-
-    // Misc
-
+    // Game Logics
     void updateScore();
-
-    // Collision
-
-    bool checkCollisionEnemyWithBullets(const std::shared_ptr<Enemy>& enemy);
     bool checkCollisionPlayerWithEnemies();
+    void checkCollisionEnemiesWithBullets();
 
-    // Game states
+    // Per frame Update functions
+    void update();
 
-    State state;
-
-    // All state update
-
-    void updateAll();
-
-    // Render functions
-
-    void renderPlaying();
-    void renderBullets();
-    void renderEnemies();
-    void renderGameOver();
+    // Draw functions
+    void draw();
 
 public:
     // Constructor
-
     Game();
 
     // Run function

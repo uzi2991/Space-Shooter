@@ -1,8 +1,27 @@
 #include <Enemy.hpp>
 
-Enemy::Enemy(const std::shared_ptr<sf::RenderTarget>& master, const std::shared_ptr<sf::Texture>& texture): Entity(master, texture) {
+Enemy::Enemy(const sf::Texture& texture, int windowWidth, int windowHeight): 
+    Ship(texture, 2, 0.1f) {
     this->sprite.setScale(2.5f, 2.5f);
-    this->animation = std::make_shared<Animation>(this->sprite, 0.1f, 2);
+    this->moveSpeed = 100.f;
 
-    this->movementSpeed = 100.f;
+    this->minX = 0.f;
+    this->maxX = windowWidth - this->getGlobalBounds().width;
+    this->minY = -this->getGlobalBounds().height;
+    this->maxY = windowHeight;
+
+    this->moveDown();
+    this->isOut = false;
+}
+
+void Enemy::setOut() {
+    this->isOut = true;
+}
+
+void Enemy::update(float deltaTime) {
+    this->Ship::update(deltaTime);
+    auto [x, y, width, heigh] = this->getGlobalBounds();
+    if (y > this->maxY) {
+        this->setOut();
+    }
 }

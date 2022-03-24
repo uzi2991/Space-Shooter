@@ -1,8 +1,19 @@
 #pragma once
 
-#include <Entity.hpp>
+#include <Ship.hpp>
 
-class Enemy: public Entity {
+class Enemy: public Ship {
+    friend class EnemyManager;
+
+private:
+    float minX, maxX;
+    float minY, maxY;
+    bool isOut;
+
 public:
-    Enemy(const std::shared_ptr<sf::RenderTarget>& master, const std::shared_ptr<sf::Texture>& texture);
+    Enemy(const sf::Texture& texture, int windowWidth, int windowHeight);
+
+    void setOut();
+
+    void update(float deltaTime) override;
 };

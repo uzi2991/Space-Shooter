@@ -1,8 +1,8 @@
 #include <Background.hpp>
 
-Background::Background(const std::shared_ptr<sf::RenderTarget>& master, const std::shared_ptr<sf::Texture>& texture) {
-    this->sprite1.setTexture(*texture);
-    this->sprite2.setTexture(*texture);
+Background::Background(const sf::Texture& texture) {
+    this->sprite1.setTexture(texture);
+    this->sprite2.setTexture(texture);
     this->sprite1.setScale(2.f, 2.f);
     this->sprite2.setScale(2.f, 2.f);
 
@@ -11,8 +11,6 @@ Background::Background(const std::shared_ptr<sf::RenderTarget>& master, const st
 
     this->sprite1.setPosition(0.f, 0.f);
     this->sprite2.setPosition(0.f, this->height);
-
-    this->master = master;
 }
 
 void Background::update(float dt) {
@@ -29,7 +27,7 @@ void Background::update(float dt) {
     }
 }
 
-void Background::render() const {
-    this->master->draw(this->sprite1);
-    this->master->draw(this->sprite2);
+void Background::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    target.draw(this->sprite1, states);
+    target.draw(this->sprite2, states);
 }

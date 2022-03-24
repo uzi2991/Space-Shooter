@@ -1,20 +1,17 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <memory>
 
-class Background {
+class Background: public sf::Drawable {
 private:
     sf::Sprite sprite1, sprite2;
     int height;
     float speed;
-    std::shared_ptr<sf::RenderTarget> master;
+
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 public:
-    Background(const std::shared_ptr<sf::RenderTarget>& master, const std::shared_ptr<sf::Texture>& texture);
+    Background(const sf::Texture& texture);
 
-    void update(float dt);
-
-    void render() const;
-    
+    void update(float dt); 
 };

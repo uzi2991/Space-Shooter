@@ -4,16 +4,16 @@
 
 class Animation {
 private:
-    float duration;
-    float progess;
+    float totalTime;
+    float frameDuration;
     int curFrame;
-    int numFrames;
-    int frameWidth;
+    int frameCount;
     sf::IntRect frameRect;
-    sf::Sprite& sprite;
 
 public:
-    Animation(sf::Sprite& sprite, float duration, int numFrames);
+    Animation(const sf::Vector2u& spriteSheetSize, int frameCount, float frameDuration);
 
-    void update(float dt);
+    void update(float deltaTime);
+
+    void applyToSprite(sf::Sprite& sprite) const;
 };

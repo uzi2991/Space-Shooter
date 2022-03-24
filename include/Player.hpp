@@ -1,8 +1,16 @@
 #pragma once
 
-#include <Entity.hpp>
+#include <Ship.hpp>
 
-class Player: public Entity {
+class Player: public Ship {
+private:
+    float minX, maxX;
+    float minY, maxY;
+
+    void processBoundary();
+
 public:
-    Player(const std::shared_ptr<sf::RenderTarget>& master, const std::shared_ptr<sf::Texture>& texture);
+    Player(const sf::Texture& texture, int windowWidth, int windowHeight);
+
+    void update(float deltaTime) override;
 };
