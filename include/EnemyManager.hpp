@@ -6,30 +6,24 @@
 #include <algorithm>
 #include <cstdlib>
 
-
-class EnemyManager: public sf::Drawable {
+using EnemyRef = std::unique_ptr<Enemy>; 
+class EnemyManager {
 private:
-    std::vector<std::shared_ptr<Enemy>> data;
+    GameDataRef data;
 
-    sf::Texture texture;
-
-    int windowWidth, windowHeight;
+    std::vector<EnemyRef> _list;
 
     float totalTime;
     float spawnCoolDown;
 
-    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-
 public:
-    EnemyManager();
+    EnemyManager(GameDataRef data);
     
-    void setWindowSize(int windowWidth, int windowHeigh);
-
-    void setTexture(const sf::Texture& texture);
-    
-    const std::vector<std::shared_ptr<Enemy>>& list() const;
+    const std::vector<EnemyRef>& list();
 
     void spawnEnemy();
     
     void update(float deltaTime);
+
+    void draw() const;
 };

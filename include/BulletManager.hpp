@@ -5,27 +5,23 @@
 #include <memory>
 #include <algorithm>
 #include <cstdlib>
-#include <Bullet.hpp>
 
 
-class BulletManager: public sf::Drawable {
-private:
-    std::vector<std::shared_ptr<Bullet>> data;
-
-    sf::Texture texture;
-
-    int windowWidth, windowHeight;
-
-    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-
+class BulletManager {
 public:
-    void setWindowSize(int windowWidth, int windowHeigh);
-
-    void setTexture(const sf::Texture& texture);
+    BulletManager(GameDataRef data);
     
-    const std::vector<std::shared_ptr<Bullet>>& list() const;
+    std::vector<Bullet>& list();
 
     void shootBullet(float x, float y);
     
     void update(float deltaTime);
+
+    void draw() const;
+
+private:
+    std::vector<Bullet> _list;
+
+    GameDataRef data;
+
 };

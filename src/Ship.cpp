@@ -1,15 +1,16 @@
 #include <Ship.hpp>
 
 
-Ship::Ship(const sf::Texture& texture, int frameCount, float frameDuration) :
-    animation({texture.getSize().x, texture.getSize().y}, frameCount, frameDuration) {
-    this->sprite.setTexture(texture);
-    this->animation.applyToSprite(this->sprite);
-
+Ship::Ship(GameDataRef data) : data(data)
+{
     this->isMovingLeft = false;
     this->isMovingRight = false;
     this->isMovingRight = false;
     this->isMovingDown = false;
+}
+
+Ship::~Ship() {
+    delete this->animation;
 }
 
 void Ship::setPosition(float x, float y) {
@@ -53,8 +54,8 @@ void Ship::stopDown() {
 }
 
 void Ship::update(float deltaTime) {
-    this->animation.update(deltaTime);
-    this->animation.applyToSprite(this->sprite);
+    this->animation->update(deltaTime);
+    this->animation->applyToSprite(this->sprite);
 
     float x = this->getGlobalBounds().left;
     float y = this->getGlobalBounds().top;
@@ -78,6 +79,6 @@ void Ship::update(float deltaTime) {
     this->setPosition(x, y);
 }
 
-void Ship::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    target.draw(this->sprite, states);
+void Ship::draw() const {
+    this->data->window.draw(this->sprite);
 }

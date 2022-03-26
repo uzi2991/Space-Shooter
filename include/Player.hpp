@@ -4,13 +4,10 @@
 
 class Player: public Ship {
 private:
-    float minX, maxX;
-    float minY, maxY;
-
     void processBoundary();
 
 public:
-    Player(const sf::Texture& texture, int windowWidth, int windowHeight);
+    Player(GameDataRef data);
 
     void update(float deltaTime) override;
 };

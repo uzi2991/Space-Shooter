@@ -1,28 +1,36 @@
 #include <Player.hpp>
+#include <Definitions.hpp>
 
-Player::Player(const sf::Texture& texture, int windowWidth, int windowHeight) : 
-    Ship(texture, 2, 0.1f) {
-    this->sprite.setScale(3.f, 3.f);
-    this->moveSpeed = 300.f;
+Player::Player(GameDataRef data) : Ship(data)
+{
+    this->sprite.setTexture(this->data->assets.getTexture("player"));
+    this->sprite.setScale(PLAYER_SCALE, PLAYER_SCALE);
 
-    this->minX = 0.f;
-    this->maxX = windowWidth - this->getGlobalBounds().width;
-    this->minY = 0.f;
-    this->maxY = windowHeight - this->getGlobalBounds().height;
+    this->animation = new Animation(
+        this->data->assets.getTexture("player").getSize(),
+        PLAYER_NUM_FRAMES,
+        PLAYER_FRAMES_TIME
+    );
+
+    this->animation->applyToSprite(this->sprite);
+
+
+    this->moveSpeed = PLAYER_MOVE_SPEED;
 }
 
 void Player::processBoundary() {
-    auto [x, y, width, heigh] = this->getGlobalBounds();
-    if (x < this->minX) {
-        x = this->minX;
-    } else if (x > this->maxX) {
-        x = this->maxX;
+    auto [x, y, width, height] = this->getGlobalBounds();
+    
+    if (x < 0.f) {
+        x = 0.f;
+    } else if (x > SCREEN_WIDTH - width) {
+        x = SCREEN_WIDTH - width;
     }
 
-    if (y < this->minY) {
-        y = this->minY;
-    } else if (y > this->maxY) {
-        y = this->maxY;
+    if (y < 0.f) {
+        y = 0.f;
+    } else if (y > SCREEN_HEIGHT - height) {
+        y = SCREEN_HEIGHT - height;
     }
 
     this->setPosition(x, y);

@@ -1,30 +1,24 @@
 #include <EnemyManager.hpp>
+#include <Definitions.hpp>
 
 
-EnemyManager::EnemyManager() {
-    this->spawnCoolDown = 1.f;
+EnemyManager::EnemyManager(GameDataRef data): data(data) {
+    this->spawnCoolDown = ENEMY_SPAWN_COOLDOWN;
     this->totalTime = this->spawnCoolDown;
 }
 
-void EnemyManager::setWindowSize(int windowWidth, int windowHeight) {
-    this->windowWidth = windowWidth;
-    this->windowHeight = windowHeight;
-}
-
-void EnemyManager::setTexture(const sf::Texture& texture) {
-    this->texture = texture;
-}
-
-const std::vector<std::shared_ptr<Enemy>>& EnemyManager::list() const {
-    return this->data;
+const std::vector<EnemyRef>& EnemyManager::list() {
+    return this->_list;
 }
 
 void EnemyManager::spawnEnemy() {
-    auto newEnemy = std::make_shared<Enemy>(texture, this->windowWidth, this->windowHeight);
-    float randomX = rand() % int(newEnemy->maxX) + newEnemy->minX;
-    newEnemy->setPosition(randomX, newEnemy->minY);
+    int type = rand() % 3;
 
-    this->data.push_back(newEnemy);
+    auto newEnemy = std::make_unique<Enemy>(this->data, type);
+    float randomX = rand() % int(SCREEN_WIDTH - newEnemy->getGlobalBounds().width);
+    newEnemy->setPosition(randomX, -newEnemy->getGlobalBounds().height);
+
+    this->_list.push_back(std::move(newEnemy));
 }
 
 void EnemyManager::update(float deltaTime) {
@@ -37,22 +31,24 @@ void EnemyManager::update(float deltaTime) {
     }
 
     // Update each enemy
-    for (const auto& enemy: this->data) {
+    for (const auto& enemy: this->_list) {
         enemy->update(deltaTime);
     }
 
     // Remove enemies out 
-    auto it = std::remove_if(
-        this->data.begin(), this->data.end(), 
-        [](const std::shared_ptr<Enemy>& enemy) {
+    auto size = std::remove_if(
+        this->_list.begin(), this->_list.end(), 
+        [](const EnemyRef& enemy) {
             return enemy->isOut;
         }
-    );
-    this->data.erase(it, this->data.end());
+    ) - this->_list.begin();
+    while ((int)this->_list.size() > size) {
+        this->_list.pop_back();
+    }
 }
 
-void EnemyManager::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    for (const auto& enemy: this->data) {
-        target.draw(*enemy, states);
+void EnemyManager::draw() const {
+    for (const auto& enemy: this->_list) {
+        enemy->draw();
     }
 }

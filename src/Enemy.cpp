@@ -1,27 +1,53 @@
 #include <Enemy.hpp>
+#include <Definitions.hpp>
 
-Enemy::Enemy(const sf::Texture& texture, int windowWidth, int windowHeight): 
-    Ship(texture, 2, 0.1f) {
-    this->sprite.setScale(2.5f, 2.5f);
-    this->moveSpeed = 100.f;
+Enemy::Enemy(GameDataRef data, int type) : Ship(data)
+{
+    switch (type)
+    {
+    case 0:
+        this->sprite.setTexture(this->data->assets.getTexture("big enemy"));
+        this->moveSpeed = BIG_ENEMY_MOVE_SPEED;
+        this->animation = new Animation(
+            this->data->assets.getTexture("big enemy").getSize(),
+            ENEMY_NUM_FRAMES,
+            ENEMY_FRAMES_TIME);
+        break;
+    case 1:
+        this->sprite.setTexture(this->data->assets.getTexture("medium enemy"));
+        this->moveSpeed = MEDIUM_ENEMY_MOVE_SPEED;
+        this->animation = new Animation(
+            this->data->assets.getTexture("medium enemy").getSize(),
+            ENEMY_NUM_FRAMES,
+            ENEMY_FRAMES_TIME);
+        break;
+    case 2:
+        this->sprite.setTexture(this->data->assets.getTexture("small enemy"));
+        this->moveSpeed = SMALL_ENEMY_MOVE_SPEED;
+        this->animation = new Animation(
+            this->data->assets.getTexture("small enemy").getSize(),
+            ENEMY_NUM_FRAMES,
+            ENEMY_FRAMES_TIME);
+        break;
+    }
 
-    this->minX = 0.f;
-    this->maxX = windowWidth - this->getGlobalBounds().width;
-    this->minY = -this->getGlobalBounds().height;
-    this->maxY = windowHeight;
+    this->animation->applyToSprite(this->sprite);
 
+    this->sprite.setScale(ENEMY_SCALE, ENEMY_SCALE);
     this->moveDown();
     this->isOut = false;
 }
 
-void Enemy::setOut() {
+void Enemy::setOut()
+{
     this->isOut = true;
 }
 
-void Enemy::update(float deltaTime) {
+void Enemy::update(float deltaTime)
+{
     this->Ship::update(deltaTime);
-    auto [x, y, width, heigh] = this->getGlobalBounds();
-    if (y > this->maxY) {
+    if (this->getGlobalBounds().top > SCREEN_HEIGHT)
+    {
         this->setOut();
     }
 }
