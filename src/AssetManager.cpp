@@ -1,7 +1,11 @@
 #include <AssetManager.hpp>
 
 void AssetManager::loadTexture(const std::string &name, const std::string &filePath)
-{
+{   
+    if (this->textures.find(name) != this->textures.end()) {
+        return;
+    }
+
     sf::Texture tex;
     if (tex.loadFromFile(filePath))
     {
@@ -15,7 +19,11 @@ const sf::Texture &AssetManager::getTexture(const std::string &name) const
 }
 
 void AssetManager::loadFont(const std::string &name, const std::string &filePath)
-{
+{   
+    if (this->fonts.find(name) != this->fonts.end()) {
+        return;
+    }
+    
     sf::Font font;
     if (font.loadFromFile(filePath))
     {

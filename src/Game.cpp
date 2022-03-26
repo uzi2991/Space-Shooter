@@ -1,5 +1,5 @@
 #include <Game.hpp>
-#include <GameState.hpp>
+#include <MenuState.hpp>
 
 Game::Game(int width, int height, std::string title)
 {
@@ -9,7 +9,7 @@ Game::Game(int width, int height, std::string title)
         title,
         sf::Style::Close | sf::Style::Titlebar);
     
-    this->data->machine.addState(StateRef(std::make_unique<GameState>(this->data)));
+    this->data->machine.addState(StateRef(std::make_unique<MenuState>(this->data)));
     
     this->run();
 }

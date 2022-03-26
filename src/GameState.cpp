@@ -1,6 +1,7 @@
 #include <GameState.hpp>
 #include <Definitions.hpp>
 #include <iostream>
+#include <GameOverState.hpp>
 
 GameState::GameState(GameDataRef data) : data(data) {}
 
@@ -19,7 +20,7 @@ void GameState::init()
     this->scoreText.setFont(this->data->assets.getFont("font"));
     this->scoreText.setString(this->scoreString);
     this->scoreText.setOutlineColor(sf::Color::Black);
-    this->scoreText.setOutlineThickness(10.f);
+    this->scoreText.setOutlineThickness(TEXT_OUTLINE_THICKNESS);
 
     this->background = std::make_unique<Background>(this->data);
 
@@ -107,6 +108,10 @@ void GameState::handleInput()
 
 void GameState::update(float deltaTime)
 {   
+    if (this->state == GameStates::GAME_OVER && this->clock.getElapsedTime().asSeconds() >= GAME_OVER_DELAY_TIME) {
+        this->data->machine.addState(StateRef(std::make_unique<GameOverState>(this->data, this->playerScore)));
+    }
+    
     this->shootingTotalTime += deltaTime;
     this->background->update(deltaTime);
     this->enemies->update(deltaTime);
@@ -118,6 +123,7 @@ void GameState::update(float deltaTime)
         if (this->checkCollisionPlayerWithEnemies())
         {
             this->state = GameStates::GAME_OVER;
+            this->clock.restart();
         }
 
         this->checkCollisionEnemiesWithBullets();

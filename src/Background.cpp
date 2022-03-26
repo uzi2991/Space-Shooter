@@ -23,12 +23,12 @@ void Background::update(float dt)
 
     if (this->sprite1.getPosition().y >= this->height)
     {
-        this->sprite1.setPosition(0.f, this->sprite1.getPosition().y - 2 * this->height);
+        this->sprite1.setPosition(0.f, this->sprite2.getPosition().y - this->height);
     }
 
     if (this->sprite2.getPosition().y >= this->height)
     {
-        this->sprite2.setPosition(0.f, this->sprite2.getPosition().y - 2 * this->height);
+        this->sprite2.setPosition(0.f, this->sprite1.getPosition().y - this->height);
     }
 }
 

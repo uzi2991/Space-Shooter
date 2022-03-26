@@ -28,6 +28,9 @@ private:
     // State
     GameStates state;
 
+    // Clock
+    sf::Clock clock;
+
     // Text
     std::string scoreString;
     sf::Text scoreText;
