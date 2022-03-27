@@ -60,41 +60,7 @@ void GameState::handleInput()
     if (this->state == GameStates::PLAYING)
     {
         // Check for player movement
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-        {
-            this->player->moveLeft();
-        }
-        else
-        {
-            this->player->stopLeft();
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-        {
-            this->player->moveRight();
-        }
-        else
-        {
-            this->player->stopRight();
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-        {
-            this->player->moveUp();
-        }
-        else
-        {
-            this->player->stopUp();
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-        {
-            this->player->moveDown();
-        }
-        else
-        {
-            this->player->stopDown();
-        }
+        this->player->handleInput();
 
         // Player Shoot
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->shootingTotalTime >= BULLET_SHOOTING_COOLDOWN)
@@ -111,7 +77,7 @@ void GameState::update(float deltaTime)
     if (this->state == GameStates::GAME_OVER && this->clock.getElapsedTime().asSeconds() >= GAME_OVER_DELAY_TIME) {
         this->data->machine.addState(StateRef(std::make_unique<GameOverState>(this->data, this->playerScore)));
     }
-    
+
     this->shootingTotalTime += deltaTime;
     this->background->update(deltaTime);
     this->enemies->update(deltaTime);
@@ -129,7 +95,7 @@ void GameState::update(float deltaTime)
         this->checkCollisionEnemiesWithBullets();
     }
 
-    std::cout << this->enemies->list().size() << " " << this->bullets->list().size() << '\n';
+    // std::cout << this->enemies->list().size() << " " << this->bullets->list().size() << '\n';
 }
 
 void GameState::draw() const

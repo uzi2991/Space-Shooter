@@ -1,4 +1,5 @@
 #include <Animation.hpp>
+#include <cmath>
 
 Animation::Animation(const sf::Vector2u& spriteSheetSize, int frameCount, float frameDuration) {
     this->totalTime = 0.f;
@@ -19,15 +20,14 @@ Animation::Animation(const sf::Vector2u& spriteSheetSize, int frameCount, float 
 void Animation::update(float deltaTime) {
     this->totalTime += deltaTime;
 
-    if (this->totalTime >= this->frameDuration) {
-        this->totalTime -= this->frameDuration;
-
-        if (++this->curFrame >= this->frameCount) {
-            this->curFrame = 0;
-       
+    if (this->totalTime > this->frameDuration) {
+        this->curFrame += this->totalTime / this->frameDuration;
+        if (this->curFrame >= this->frameCount) {
+            this->curFrame %= this->frameCount;
         }
-
         this->frameRect.left = this->curFrame * this->frameRect.width;
+        
+        this->totalTime = fmod(this->totalTime, this->frameDuration);
     }
 }
 
