@@ -9,6 +9,7 @@
 #define BIG_ENEMY_FILEPATH "res/Graphics/spritesheets/enemy-big.png"
 #define MEDIUM_ENEMY_FILEPATH "res/Graphics/spritesheets/enemy-medium.png"
 #define SMALL_ENEMY_FILEPATH "res/Graphics/spritesheets/enemy-small.png"
+#define HEART_FILEPATH "res/Graphics/spritesheets/heart.png"
 
 #define BACKGROUND_MOVE_SPEED 50.f
 
@@ -16,6 +17,7 @@
 #define PLAYER_FRAMES_TIME (1.f/12.f)
 #define PLAYER_SCALE 3.f
 #define PLAYER_MOVE_SPEED 300.f
+#define PLAYER_HEALTH 3
 
 #define ENEMY_NUM_FRAMES 2
 #define ENEMY_FRAMES_TIME (1.f/12.f)

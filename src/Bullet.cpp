@@ -1,7 +1,7 @@
 #include <Bullet.hpp>
 #include <Definitions.hpp>
 
-Bullet::Bullet(GameDataRef data) : data(data)
+Bullet::Bullet(GameDataRef data, const sf::Vector2f& direction) : data(data), direction(direction)
 {
     this->sprite.setTexture(this->data->assets.getTexture("bullet"));
     this->sprite.setOrigin(
@@ -15,8 +15,9 @@ Bullet::Bullet(GameDataRef data) : data(data)
 
 void Bullet::update(float deltaTime)
 {
-    this->sprite.move(sf::Vector2f(0.f, -1.f) * this->moveSpeed * deltaTime);
-    if (this->sprite.getGlobalBounds().top < -this->getGlobalBounds().height)
+    this->sprite.move(this->direction * this->moveSpeed * deltaTime);
+    if (this->getGlobalBounds().top < -this->getGlobalBounds().height ||
+        this->getGlobalBounds().top > SCREEN_HEIGHT)
     {
         this->setOut();
     }

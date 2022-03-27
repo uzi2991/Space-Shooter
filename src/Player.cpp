@@ -18,9 +18,16 @@ Player::Player(GameDataRef data): data(data)
     this->direction.y = 0.f;
 
     this->moveSpeed = PLAYER_MOVE_SPEED;
+
+    this->_bullets = std::make_unique<BulletManager>(this->data);
+
+    this->shootingTimer = BULLET_SHOOTING_COOLDOWN;
+
+    this->hp = PLAYER_HEALTH;
 }
 
 void Player::handleInput() {
+    // Movement
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
         this->direction.x = -1.f;
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
@@ -35,6 +42,12 @@ void Player::handleInput() {
         this->direction.y = 1.f;
     } else {
         this->direction.y = 0.f;
+    }
+
+    // Shoot a bullet
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->shootingTimer > BULLET_SHOOTING_COOLDOWN) {
+        this->shootingTimer = 0.f;
+        this->shoot();
     }
 }
 
@@ -64,10 +77,15 @@ void Player::update(float deltaTime) {
 
     // Set position
     this->setPosition(x, y);
+
+    // Update bullets
+    this->_bullets->update(deltaTime);
+    this->shootingTimer += deltaTime;
 }
 
 void Player::draw() const {
     this->data->window.draw(this->sprite);
+    this->_bullets->draw();
 }
 
 sf::FloatRect Player::getGlobalBounds() const {
@@ -76,4 +94,24 @@ sf::FloatRect Player::getGlobalBounds() const {
 
 void Player::setPosition(float x, float y) {
     this->sprite.setPosition(x, y);
+}
+
+const std::vector<BulletRef>& Player::bullets() const {
+    return this->_bullets->list();
+}
+
+void Player::shoot() {
+    auto [left, top, width, height] = this->getGlobalBounds();
+    this->_bullets->spawnBullet(
+        left + width / 2, top,
+        sf::Vector2f(0.f, -1.f)
+    );
+}
+
+bool Player::takeHit() {
+    return (--this->hp == 0);
+}
+
+int Player::getHP() const {
+    return this->hp;
 }

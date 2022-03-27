@@ -6,22 +6,22 @@
 #include <algorithm>
 #include <cstdlib>
 
-
-class BulletManager {
+using BulletRef = std::unique_ptr<Bullet> ;
+class BulletManager
+{
 public:
     BulletManager(GameDataRef data);
-    
-    std::vector<Bullet>& list();
 
-    void shootBullet(float x, float y);
-    
     void update(float deltaTime);
 
     void draw() const;
 
+    void spawnBullet(float x, float y, const sf::Vector2f& direction);
+
+    const std::vector<BulletRef>& list();
+
 private:
-    std::vector<Bullet> _list;
+    std::vector<BulletRef> _list;
 
     GameDataRef data;
-
 };

@@ -15,12 +15,9 @@ void GameState::init()
     this->data->assets.loadTexture("big enemy", BIG_ENEMY_FILEPATH);
     this->data->assets.loadTexture("medium enemy", MEDIUM_ENEMY_FILEPATH);
     this->data->assets.loadTexture("small enemy", SMALL_ENEMY_FILEPATH);
+    this->data->assets.loadTexture("heart", HEART_FILEPATH);
 
-    this->scoreString = "Score: 0";
-    this->scoreText.setFont(this->data->assets.getFont("font"));
-    this->scoreText.setString(this->scoreString);
-    this->scoreText.setOutlineColor(sf::Color::Black);
-    this->scoreText.setOutlineThickness(TEXT_OUTLINE_THICKNESS);
+    this->hud = std::make_unique<GameHUD>(this->data);
 
     this->background = std::make_unique<Background>(this->data);
 
@@ -29,9 +26,6 @@ void GameState::init()
         SCREEN_WIDTH / 2 - this->player->getGlobalBounds().width,
         SCREEN_HEIGHT - this->player->getGlobalBounds().height);
     this->playerScore = 0;
-
-    this->bullets = std::make_unique<BulletManager>(this->data);
-    this->shootingTotalTime = BULLET_SHOOTING_COOLDOWN;
 
     this->enemies = std::make_unique<EnemyManager>(this->data);
 
@@ -59,16 +53,8 @@ void GameState::handleInput()
 
     if (this->state == GameStates::PLAYING)
     {
-        // Check for player movement
+        // Check for player input
         this->player->handleInput();
-
-        // Player Shoot
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->shootingTotalTime >= BULLET_SHOOTING_COOLDOWN)
-        {
-            this->shootingTotalTime = 0.f;
-            auto [x, y, width, height] = this->player->getGlobalBounds();
-            this->bullets->shootBullet(x + width / 2, y);
-        }
     }
 }
 
@@ -78,19 +64,22 @@ void GameState::update(float deltaTime)
         this->data->machine.addState(StateRef(std::make_unique<GameOverState>(this->data, this->playerScore)));
     }
 
-    this->shootingTotalTime += deltaTime;
     this->background->update(deltaTime);
     this->enemies->update(deltaTime);
-    this->bullets->update(deltaTime);
 
     if (this->state == GameStates::PLAYING)
     {
         this->player->update(deltaTime);
         if (this->checkCollisionPlayerWithEnemies())
-        {
-            this->state = GameStates::GAME_OVER;
-            this->clock.restart();
-        }
+        {   
+            if (this->player->takeHit())
+            {
+                this->state = GameStates::GAME_OVER;
+                this->clock.restart();
+            }
+
+            this->hud->updateHP(this->player->getHP());      
+        }   
 
         this->checkCollisionEnemiesWithBullets();
     }
@@ -109,20 +98,15 @@ void GameState::draw() const
     {
         this->player->draw();
     }
+
     this->enemies->draw();
-    this->bullets->draw();
-    this->data->window.draw(this->scoreText);
+    
+    this->hud->draw();
 
     // Display
     this->data->window.display();
 }
 
-void GameState::updateScore()
-{
-    ++this->playerScore;
-    this->scoreString = "Score: " + std::to_string(this->playerScore);
-    this->scoreText.setString(this->scoreString);
-}
 
 bool GameState::checkCollisionPlayerWithEnemies()
 {
@@ -142,13 +126,13 @@ void GameState::checkCollisionEnemiesWithBullets()
 {
     for (const auto &enemy : this->enemies->list())
     {
-        for (auto &bullet : this->bullets->list())
+        for (const auto &bullet : this->player->bullets())
         {
-            if (enemy->getGlobalBounds().intersects(bullet.getGlobalBounds()))
+            if (enemy->getGlobalBounds().intersects(bullet->getGlobalBounds()))
             {
-                this->updateScore();
+                this->hud->updateScore(++this->playerScore);
                 enemy->setOut();
-                bullet.setOut();
+                bullet->setOut();
                 break;
             }
         }

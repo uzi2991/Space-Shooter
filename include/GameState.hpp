@@ -2,8 +2,8 @@
 #include <Game.hpp>
 #include <Background.hpp>
 #include <Player.hpp>
-#include <BulletManager.hpp>
 #include <EnemyManager.hpp>
+#include <GameHUD.hpp>
 
 enum class GameStates {
     PLAYING,
@@ -31,9 +31,8 @@ private:
     // Clock
     sf::Clock clock;
 
-    // Text
-    std::string scoreString;
-    sf::Text scoreText;
+    // HUD
+    std::unique_ptr<GameHUD> hud;
 
     // Background
     std::unique_ptr<Background> background;
@@ -41,10 +40,6 @@ private:
     // Player
     std::unique_ptr<Player> player;
     int playerScore;
-
-    // Bullets
-    std::unique_ptr<BulletManager> bullets;
-    float shootingTotalTime;
 
     // Enemies
     std::unique_ptr<EnemyManager> enemies;
