@@ -1,6 +1,6 @@
 #include <BulletManager.hpp>
 
-BulletManager::BulletManager(GameDataRef data) : data(data) {}
+BulletManager::BulletManager(GameDataRef data, BulletType type) : data(data), type(type) {}
 
 void BulletManager::update(float deltaTime)
 {
@@ -42,7 +42,7 @@ const std::vector<BulletRef>& BulletManager::list()
 
 void BulletManager::spawnBullet(float x, float y, const sf::Vector2f &direction)
 {
-    auto newBullet = std::make_unique<Bullet>(this->data, direction);
+    auto newBullet = std::make_unique<Bullet>(this->data, direction, this->type);
 
     newBullet->setPosition(x, y);
 

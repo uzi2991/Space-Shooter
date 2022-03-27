@@ -48,6 +48,7 @@ private:
     void updateScore();
 
     // Collision Detection
-    bool checkCollisionPlayerWithEnemies();
+    void checkCollisionPlayerWithEnemies();
     void checkCollisionEnemiesWithBullets();
+    void checkCollisionPlayerWithBullets();
 };

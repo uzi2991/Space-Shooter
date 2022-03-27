@@ -10,7 +10,7 @@ using BulletRef = std::unique_ptr<Bullet> ;
 class BulletManager
 {
 public:
-    BulletManager(GameDataRef data);
+    BulletManager(GameDataRef data, BulletType type);
 
     void update(float deltaTime);
 
@@ -21,7 +21,9 @@ public:
     const std::vector<BulletRef>& list();
 
 private:
+    GameDataRef data;
+
     std::vector<BulletRef> _list;
 
-    GameDataRef data;
+    BulletType type;
 };

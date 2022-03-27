@@ -1,5 +1,8 @@
 #include <EnemyManager.hpp>
 #include <Definitions.hpp>
+#include <SmallEnemy.hpp>
+#include <MediumEnemy.hpp>
+#include <BigEnemy.hpp>
 
 EnemyManager::EnemyManager(GameDataRef data) : data(data)
 {
@@ -54,9 +57,24 @@ const std::vector<EnemyRef>& EnemyManager::list()
 
 void EnemyManager::spawnEnemy()
 {
-    int type = rand() % 3;
+    EnemyType type = EnemyType(rand() % 3);
 
-    auto newEnemy = std::make_unique<Enemy>(this->data, type);
+    EnemyRef newEnemy;
+    
+    switch (type)
+    {
+    case EnemyType::Small:
+        newEnemy = std::make_unique<SmallEnemy>(this->data);
+        break;
+    
+    case EnemyType::Medium:
+        newEnemy = std::make_unique<MediumEnemy>(this->data);
+        break;
+    
+    case EnemyType::Big:
+        newEnemy = std::make_unique<BigEnemy>(this->data);
+    }
+    
     float randomX = rand() % int(SCREEN_WIDTH - newEnemy->getGlobalBounds().width);
     newEnemy->setPosition(randomX, -newEnemy->getGlobalBounds().height);
 

@@ -2,13 +2,19 @@
 
 #include <SFML/Graphics.hpp>
 #include <Game.hpp>
+#include <Animation.hpp>
 
+enum class BulletType
+{
+    Laser,
+    Bolts
+};
 class Bullet
 {
     friend class BulletManager;
 
 public:
-    Bullet(GameDataRef data, const sf::Vector2f& direction);
+    Bullet(GameDataRef data, const sf::Vector2f &direction, BulletType type);
 
     void update(float deltaTime);
 
@@ -22,7 +28,9 @@ public:
 
 private:
     GameDataRef data;
-    
+
+    std::unique_ptr<Animation> animation;
+
     sf::Sprite sprite;
 
     sf::Vector2f direction;
@@ -30,5 +38,4 @@ private:
     float moveSpeed;
 
     bool isOut;
-
 };

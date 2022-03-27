@@ -19,7 +19,7 @@ Player::Player(GameDataRef data): data(data)
 
     this->moveSpeed = PLAYER_MOVE_SPEED;
 
-    this->_bullets = std::make_unique<BulletManager>(this->data);
+    this->_bullets = std::make_unique<BulletManager>(this->data, BulletType::Bolts);
 
     this->shootingTimer = BULLET_SHOOTING_COOLDOWN;
 
@@ -108,8 +108,8 @@ void Player::shoot() {
     );
 }
 
-bool Player::takeHit() {
-    return (--this->hp == 0);
+void Player::takeHit() {
+    --this->hp;
 }
 
 int Player::getHP() const {

@@ -23,8 +23,8 @@ public:
 
     void shoot();
 
-    // player takes damage and return true if player is dead
-    bool takeHit();
+    // takes damage
+    void takeHit();
 
     // Return the current HP
     int getHP() const;

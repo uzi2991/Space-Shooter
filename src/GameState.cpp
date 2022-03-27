@@ -11,7 +11,8 @@ void GameState::init()
     this->data->assets.loadFont("font", FONT_FILEPATH);
     this->data->assets.loadTexture("background", BACKGROUND_FILEPATH);
     this->data->assets.loadTexture("player", PLAYER_FILEPATH);
-    this->data->assets.loadTexture("bullet", BULLET_FILEPATH);
+    this->data->assets.loadTexture("laser", LASER_FILEPATH);
+    this->data->assets.loadTexture("bolts", BOLTS_FILEPATH);
     this->data->assets.loadTexture("big enemy", BIG_ENEMY_FILEPATH);
     this->data->assets.loadTexture("medium enemy", MEDIUM_ENEMY_FILEPATH);
     this->data->assets.loadTexture("small enemy", SMALL_ENEMY_FILEPATH);
@@ -59,8 +60,9 @@ void GameState::handleInput()
 }
 
 void GameState::update(float deltaTime)
-{   
-    if (this->state == GameStates::GAME_OVER && this->clock.getElapsedTime().asSeconds() >= GAME_OVER_DELAY_TIME) {
+{
+    if (this->state == GameStates::GAME_OVER && this->clock.getElapsedTime().asSeconds() >= GAME_OVER_DELAY_TIME)
+    {
         this->data->machine.addState(StateRef(std::make_unique<GameOverState>(this->data, this->playerScore)));
     }
 
@@ -70,21 +72,18 @@ void GameState::update(float deltaTime)
     if (this->state == GameStates::PLAYING)
     {
         this->player->update(deltaTime);
-        if (this->checkCollisionPlayerWithEnemies())
-        {   
-            if (this->player->takeHit())
-            {
-                this->state = GameStates::GAME_OVER;
-                this->clock.restart();
-            }
-
-            this->hud->updateHP(this->player->getHP());      
-        }   
-
+        this->checkCollisionPlayerWithEnemies();
+        this->checkCollisionPlayerWithBullets();
         this->checkCollisionEnemiesWithBullets();
-    }
 
-    // std::cout << this->enemies->list().size() << " " << this->bullets->list().size() << '\n';
+        if (this->player->getHP() == 0)
+        {
+            this->state = GameStates::GAME_OVER;
+            this->clock.restart();
+        }
+
+        this->hud->updateHP(this->player->getHP());
+    }
 }
 
 void GameState::draw() const
@@ -100,26 +99,38 @@ void GameState::draw() const
     }
 
     this->enemies->draw();
-    
+
     this->hud->draw();
 
     // Display
     this->data->window.display();
 }
 
-
-bool GameState::checkCollisionPlayerWithEnemies()
+void GameState::checkCollisionPlayerWithEnemies()
 {
     for (const auto &enemy : this->enemies->list())
     {
         if (this->player->getGlobalBounds().intersects(enemy->getGlobalBounds()))
         {
             enemy->setOut();
-            return true;
+            this->player->takeHit();
         }
     }
+}
 
-    return false;
+void GameState::checkCollisionPlayerWithBullets()
+{
+    for (const auto &enemy : this->enemies->list())
+    {
+        for (const auto &bullet : enemy->bullets())
+        {
+            if (this->player->getGlobalBounds().intersects(bullet->getGlobalBounds()))
+            {
+                this->player->takeHit();
+                bullet->setOut();
+            }
+        }
+    }
 }
 
 void GameState::checkCollisionEnemiesWithBullets()
